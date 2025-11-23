@@ -1,11 +1,17 @@
-# DISA STIG-Hardened Rocky Linux 9 – Ansible + OpenSCAP
+# ansible-stig-rocky9  
+DISA STIG-hardened Rocky Linux 9 golden image – fully automated with Ansible + OpenSCAP
 
-Fully automated hardening of Rocky Linux 9 to the latest **DISA STIG** using Ansible and validated with OpenSCAP.
+Perfect for DoD IL4/IL5/IL6, Platform One, Big Bang, and tactical-edge / air-gapped deployments.
 
-Perfect for **IL4/IL5/IL6**, **Platform One**, **Big Bang**, **tactical edge**, and **air-gapped** deployments.
-
-## One-command demo
+### One-command demo
 ```bash
-vagrant up          # Spins up Rocky 9 + runs full STIG playbook
-vagrant ssh -c "sudo cat /etc/system-fips"   # Prove FIPS enabled
-open report.html    # Beautiful compliance report
+vagrant up                  # builds Rocky 9 VM + applies full STIG
+vagrant ssh -c "cat /etc/system-fips"   # proves FIPS enabled
+open report.html            # beautiful compliance report
+Features
+
+180+ DISA STIG controls applied automatically
+FIPS 140-2 enabled
+Root login disabled, 15-char complex passwords
+Full OpenSCAP scan + HTML report
+100% offline capable

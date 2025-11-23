@@ -1,0 +1,52 @@
+---
+- name: Ensure SSH PermitRootLogin is disabled
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^PermitRootLogin'
+    line: 'PermitRootLogin no'
+  notify: restart sshd
+
+- name: Disable unused filesystems
+  lineinfile:
+    path: /etc/modprobe.d/disabled.conf
+    create: yes
+    line: "{{ item }}"
+  loop:
+    - "install cramfs /bin/true"
+    - "install freevxfs /bin/true"
+    - "install jffs2 /bin/true"
+    - "install hfs /bin/true"
+    - "install hfsplus /bin/true"
+    - "install udf /bin/true"
+
+- name: Set strong password policy
+  pamd:
+    name: system-auth
+    type: password
+    control: requisite
+    module: pam_pwquality.so
+    args: "try_first_pass retry=3 minlen=15 dcredit=-1 ucredit=-1 ocredit=-1 lcredit=-1"
+
+- name: Enable FIPS mode
+  command: fips-mode-setup --enable
+  args:
+    creates: /etc/system-fips
+
+- name: Install security packages
+  dnf:
+    name:
+      - openscap-scanner
+      - scap-security-guide
+      - aide
+      - audit
+    state: present
+
+- name: Run OpenSCAP STIG scan + generate HTML report
+  command: >
+    oscap xccdf eval --profile xccdf_org.ssgproject.content_profile_stig
+    --results-arf arf.xml
+    --report report.html
+    /usr/share/xml/scap/ssg/content/ssg-rhel9-ds.xml
+  args:
+    creates: report.html
+  ignore_errors: yes

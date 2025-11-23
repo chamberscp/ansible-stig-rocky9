@@ -1,0 +1,6 @@
+---
+- name: Harden Rocky Linux 9 to DISA STIG
+  hosts: all
+  become: yes
+  roles:
+    - stig_rocky9
